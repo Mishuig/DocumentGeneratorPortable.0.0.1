@@ -1,18 +1,15 @@
-name: Build portable Windows app
+name: Build portable (Mishuig-patch-2)
 
 on:
   workflow_dispatch:
+    inputs:
+      ref:
+        description: 'Гілка або тег для збірки'
+        required: true
+        default: 'Mishuig-patch-2'
   push:
     branches:
-      - main
-      - master
-      - Mishuig-patch-1
-    paths:
-      - '**.cs'
-      - '**.xaml'
-      - '**.csproj'
-      - 'samples/**'
-      - '.github/workflows/**'
+      - Mishuig-patch-2
 
 permissions:
   contents: read
@@ -21,24 +18,37 @@ jobs:
   build:
     runs-on: windows-latest
     steps:
-      - name: Checkout source
+      - name: Checkout
         uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.ref || github.ref }}
 
       - name: Install .NET 10 SDK
         uses: actions/setup-dotnet@v4
         with:
           dotnet-version: 10.0.x
 
-      - name: Restore dependencies
-        run: dotnet restore .\DocumentGenerator.csproj --runtime win-x64
-
-      - name: Publish self-contained Windows x64 app
+      - name: Build portable package
         shell: pwsh
         run: |
           $ErrorActionPreference = 'Stop'
-          $package = Join-Path $env:GITHUB_WORKSPACE 'publish\DocumentGenerator-portable-win-x64'
-          New-Item -ItemType Directory -Force -Path $package | Out-Null
-          dotnet publish .\DocumentGenerator.csproj `
+
+          # Знайти проєкт де б він не лежав (корінь або підпапка)
+          $proj = Get-ChildItem -Path $env:GITHUB_WORKSPACE -Recurse -Filter 'DocumentGenerator.csproj' | Select-Object -First 1
+          if (-not $proj) { throw 'DocumentGenerator.csproj не знайдено у гілці.' }
+          $src = $proj.DirectoryName
+          Write-Host "Project: $($proj.FullName)"
+
+          $version = ([xml](Get-Content $proj.FullName)).Project.PropertyGroup.Version | Where-Object { $_ } | Select-Object -First 1
+          if (-not $version) { $version = '0.0.0' }
+          $name = "DocumentGenerator-$version-portable-win-x64"
+          $pkg  = Join-Path $env:GITHUB_WORKSPACE "publish\$name"
+          New-Item -ItemType Directory -Force -Path $pkg | Out-Null
+
+          dotnet restore $proj.FullName --runtime win-x64
+          if ($LASTEXITCODE -ne 0) { throw 'dotnet restore failed.' }
+
+          dotnet publish $proj.FullName `
             --configuration Release `
             --runtime win-x64 `
             --self-contained true `
@@ -48,22 +58,28 @@ jobs:
             -p:EnableCompressionInSingleFile=true `
             -p:DebugType=None `
             -p:DebugSymbols=false `
-            --output $package
+            --output $pkg
           if ($LASTEXITCODE -ne 0) { throw 'dotnet publish failed.' }
-          $exe = Join-Path $package 'DocumentGenerator.exe'
-          if (-not (Test-Path $exe)) { throw 'DocumentGenerator.exe was not produced.' }
-          Copy-Item .\README.md (Join-Path $package 'README.txt')
-          if (Test-Path .\samples) {
-            Copy-Item .\samples (Join-Path $package 'samples') -Recurse -Force
+          if (-not (Test-Path (Join-Path $pkg 'DocumentGenerator.exe'))) { throw 'DocumentGenerator.exe was not produced.' }
+
+          # Додаткові файли (якщо є в гілці)
+          foreach ($f in 'App.ico','create-shortcut.ps1','Create-Shortcut.cmd') {
+            $p = Join-Path $src $f
+            if (Test-Path $p) { Copy-Item $p $pkg -Force }
           }
-          $zip = Join-Path $env:GITHUB_WORKSPACE 'publish\DocumentGenerator-0.5.0-portable-win-x64.zip'
-          Compress-Archive -Path (Join-Path $package '*') -DestinationPath $zip -Force
-          Write-Host "Portable package created: $zip"
+          if (Test-Path (Join-Path $src 'samples')) { Copy-Item (Join-Path $src 'samples') (Join-Path $pkg 'samples') -Recurse -Force }
+          if (Test-Path (Join-Path $src 'README.md')) { Copy-Item (Join-Path $src 'README.md') (Join-Path $pkg 'README.txt') -Force }
+
+          $zip = Join-Path $env:GITHUB_WORKSPACE "publish\$name.zip"
+          Compress-Archive -Path (Join-Path $pkg '*') -DestinationPath $zip -Force
+          "ARTIFACT_NAME=$name" | Out-File -FilePath $env:GITHUB_ENV -Append -Encoding utf8
+          "ARTIFACT_ZIP=$zip"   | Out-File -FilePath $env:GITHUB_ENV -Append -Encoding utf8
+          Write-Host "Created $zip"
 
       - name: Upload portable ZIP
         uses: actions/upload-artifact@v4
         with:
-          name: DocumentGenerator-0.5.0-portable-win-x64
-          path: publish/DocumentGenerator-0.5.0-portable-win-x64.zip
+          name: ${{ env.ARTIFACT_NAME }}
+          path: ${{ env.ARTIFACT_ZIP }}
           if-no-files-found: error
-          retention-days: 14
+          retention-days: 30
