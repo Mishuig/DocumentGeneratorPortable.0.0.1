@@ -19,7 +19,7 @@ public partial class MainWindow : Window
 
     private readonly Dictionary<string, TextBox> _inputs = new(StringComparer.OrdinalIgnoreCase);
     private readonly Dictionary<string, string> _labels = new(StringComparer.OrdinalIgnoreCase);
-    private readonly Dictionary<string, TextBlock> _labelBlocks = new(StringComparer.OrdinalIgnoreCase);
+    private readonly Dictionary<string, FitTextBlock> _labelBlocks = new(StringComparer.OrdinalIgnoreCase);
     private readonly List<string> _fieldOrder = new();
     private readonly Dictionary<string, Border> _fieldCards = new(StringComparer.OrdinalIgnoreCase);
 
@@ -32,6 +32,7 @@ public partial class MainWindow : Window
     public MainWindow()
     {
         InitializeComponent();
+        UpdateResponsiveUi(Width, Height);
         Loaded += async (_, _) => await LoadTemplatesAsync();
     }
 
@@ -156,10 +157,10 @@ public partial class MainWindow : Window
         {
             Background = Brushes.Transparent,
             BorderThickness = new Thickness(0),
-            Margin = new Thickness(0, 0, 0, 14),
             Tag = key,
             AllowDrop = true
         };
+        card.SetResourceReference(FrameworkElement.MarginProperty, "FieldMargin");
 
         var root = new StackPanel();
 
@@ -173,12 +174,11 @@ public partial class MainWindow : Window
         DockPanel.SetDock(editBtn, Dock.Right);
         labelRow.Children.Add(editBtn);
 
-        var labelBlock = new TextBlock
+        var labelBlock = new FitTextBlock
         {
             Text = display,
             FontWeight = FontWeights.SemiBold,
             Foreground = new SolidColorBrush(Color.FromRgb(0x0F, 0x17, 0x2A)),
-            TextWrapping = TextWrapping.Wrap,
             VerticalAlignment = VerticalAlignment.Center
         };
         _labelBlocks[key] = labelBlock;
@@ -191,12 +191,12 @@ public partial class MainWindow : Window
         var handle = new TextBlock
         {
             Text = "⋮⋮",
-            FontSize = 15,
             Foreground = new SolidColorBrush(Color.FromRgb(0x94, 0xA3, 0xB8)),
             VerticalAlignment = VerticalAlignment.Center,
             Margin = new Thickness(0, 0, 8, 0),
             Cursor = Cursors.SizeAll
         };
+        handle.SetResourceReference(TextBlock.FontSizeProperty, "FsHead");
         DockPanel.SetDock(handle, Dock.Left);
         handle.PreviewMouseLeftButtonDown += FieldCard_PreviewMouseLeftButtonDown;
         handle.MouseMove += FieldCard_MouseMove;
@@ -231,7 +231,6 @@ public partial class MainWindow : Window
         var input = new TextBox
         {
             Tag = key,
-            MinHeight = IsMultilineKey(key) ? 72 : 40,
             AcceptsReturn = IsMultilineKey(key),
             TextWrapping = TextWrapping.Wrap,
             VerticalScrollBarVisibility = ScrollBarVisibility.Auto,
@@ -239,6 +238,7 @@ public partial class MainWindow : Window
             Background = new SolidColorBrush(Color.FromRgb(0xF0, 0xFD, 0xFA)),
             BorderBrush = new SolidColorBrush(Color.FromRgb(0x99, 0xF6, 0xE4))
         };
+        input.SetResourceReference(FrameworkElement.MinHeightProperty, IsMultilineKey(key) ? "InputMinHMulti" : "InputMinH");
         _inputs[key] = input;
         inputRow.Children.Add(input);
 
@@ -253,20 +253,25 @@ public partial class MainWindow : Window
         return card;
     }
 
-    private static Button MakeIconButton(string content, string tip) => new()
+    private static Button MakeIconButton(string content, string tip)
     {
-        Content = content,
-        ToolTip = tip,
-        Padding = new Thickness(6, 2, 6, 2),
-        Margin = new Thickness(2, 0, 2, 0),
-        MinHeight = 26,
-        MinWidth = 28,
-        BorderThickness = new Thickness(0),
-        Cursor = Cursors.Hand,
-        Background = Brushes.Transparent,
-        Foreground = new SolidColorBrush(Color.FromRgb(0x64, 0x74, 0x8B)),
-        FontSize = 12
-    };
+        var button = new Button
+        {
+            Content = content,
+            ToolTip = tip,
+            Padding = new Thickness(6, 2, 6, 2),
+            Margin = new Thickness(2, 0, 2, 0),
+            BorderThickness = new Thickness(0),
+            Cursor = Cursors.Hand,
+            Background = Brushes.Transparent,
+            Foreground = new SolidColorBrush(Color.FromRgb(0x64, 0x74, 0x8B))
+        };
+        button.SetResourceReference(FrameworkElement.StyleProperty, "IconButton");
+        button.SetResourceReference(FrameworkElement.MinHeightProperty, "IconSize");
+        button.SetResourceReference(FrameworkElement.MinWidthProperty, "IconSize");
+        button.SetResourceReference(Control.FontSizeProperty, "FsSmall");
+        return button;
+    }
 
     private void FieldCard_PreviewMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
     {

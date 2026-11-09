@@ -4,7 +4,7 @@ Windows desktop application for importing DOCX templates, filling `{{placeholder
 
 ## Current build status
 
-Version 0.5.3 — expanded MVP source. The project has not yet been compiled or smoke-tested on Windows in this environment. Do not treat this source archive as a verified production binary.
+Version 0.5.4 — expanded MVP source. The project has not yet been compiled or smoke-tested on Windows in this environment. Do not treat this source archive as a verified production binary.
 
 ### Implemented
 - WPF desktop interface (Ukrainian UI).
@@ -69,3 +69,9 @@ For a one-click build on Windows, double-click `build-portable.cmd`. It invokes 
 
 ## Ярлик
 Після збірки/розпакування запустіть `Create-Shortcut.cmd` — він створить ярлик з логотипом на робочому столі та в меню «Пуск». Іконка самого `DocumentGenerator.exe` також оновлена (`App.ico`).
+
+## Адаптивна верстка (0.5.4)
+- Вікно можна зменшувати до 60×60 (Windows сам обмежує мінімум системною межею для вікон із заголовком).
+- Шрифт і кнопки зменшуються разом із вікном; шрифт — не менше 10.
+- Коли тексту не вистачає місця: спочатку прибираються слова з кінця, потім літери з додаванням «...».
+- Розкладка: широке вікно — 3 колонки; половина екрана (≈400–760 px) — ліворуч бібліотека та дії, праворуч форма; вузьке — усе в один стовпчик; менше ~150 px — лише логотип.
