@@ -11,9 +11,9 @@ namespace DocumentGenerator.Services;
 /// </summary>
 public sealed class DocxTemplateEngine
 {
-    // Підтримка латиниці, кирилиці, цифр, _, -, . усередині {{змінна}}
+    // Усе між {{ і }} — змінна (включно з порожнім {{}} та будь-якими символами).
     private static readonly Regex PlaceholderRegex =
-        new(@"\{\{\s*([\p{L}\p{N}_.-]+)\s*\}\}", RegexOptions.Compiled | RegexOptions.CultureInvariant);
+        new(@"\{\{(.*?)\}\}", RegexOptions.Compiled | RegexOptions.CultureInvariant);
 
     public IReadOnlyList<string> FindPlaceholders(string docxPath)
     {
@@ -24,7 +24,7 @@ public sealed class DocxTemplateEngine
         {
             var text = string.Concat(paragraph.Descendants<Text>().Select(x => x.Text));
             foreach (Match match in PlaceholderRegex.Matches(text))
-                keys.Add(match.Groups[1].Value);
+                keys.Add(match.Groups[1].Value.Trim());
         }
 
         return keys.OrderBy(x => x, StringComparer.OrdinalIgnoreCase).ToList();
@@ -93,7 +93,7 @@ public sealed class DocxTemplateEngine
         // Process from right to left so offsets of earlier placeholders remain valid.
         foreach (var match in matches.OrderByDescending(x => x.Index))
         {
-            var key = match.Groups[1].Value;
+            var key = match.Groups[1].Value.Trim();
             if (!values.TryGetValue(key, out var replacement)) replacement = "";
             replacement ??= "";
             if (Regex.IsMatch(key, @"(full.?name|pib|fio|person.?name)", RegexOptions.IgnoreCase))

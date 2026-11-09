@@ -422,6 +422,8 @@ public partial class MainWindow : Window
 
     private static string Humanize(string key)
     {
+        if (string.IsNullOrWhiteSpace(key))
+            return "(порожня змінна)";
         var spaced = System.Text.RegularExpressions.Regex.Replace(key, "([a-zа-яіїєґ])([A-ZА-ЯІЇЄҐ])", "$1 $2");
         spaced = spaced.Replace('_', ' ').Replace('-', ' ').Replace('.', ' ');
         return spaced;

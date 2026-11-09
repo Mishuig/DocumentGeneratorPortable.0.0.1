@@ -1,9 +1,10 @@
 <Window x:Class="DocumentGenerator.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="DocuGen" Height="820" Width="1280"
+        Title="Document Generator" Height="820" Width="1280"
         MinHeight="560" MinWidth="960"
         WindowStartupLocation="CenterScreen"
+        Icon="App.ico"
         Background="#E8EEF5">
 
     <Window.Resources>
@@ -131,19 +132,11 @@
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
 
-        <!-- Top bar -->
-        <Border Background="White" BorderBrush="#E2E8F0" BorderThickness="0,0,0,1" Padding="20,14">
+        <!-- Top bar with updated logo and without DocuGen text -->
+        <Border Background="White" BorderBrush="#E2E8F0" BorderThickness="0,0,0,1" Padding="20,10">
             <DockPanel>
                 <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                    <Border Width="32" Height="32" CornerRadius="8" Background="#CCFBF1" Margin="0,0,10,0">
-                        <TextBlock Text="✎" FontSize="16" HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="#0D9488"/>
-                    </Border>
-                    <TextBlock Text="DocuGen" FontSize="20" FontWeight="SemiBold" Foreground="#0F172A" VerticalAlignment="Center"/>
-                </StackPanel>
-                <StackPanel Orientation="Horizontal" DockPanel.Dock="Right" VerticalAlignment="Center">
-                    <Button Content="Імпортувати DOCX" Click="ImportTemplate_Click" Style="{StaticResource PrimaryButton}"/>
-                    <Button Content="Резервна копія" Click="Backup_Click" Style="{StaticResource GhostButton}"/>
-                    <Button Content="Оновити" Click="Refresh_Click" Style="{StaticResource GhostButton}" Margin="0"/>
+                    <Image Source="App.ico" Width="36" Height="36" Margin="0,0,10,0"/>
                 </StackPanel>
             </DockPanel>
         </Border>
@@ -154,6 +147,8 @@
                 <ColumnDefinition Width="300" MinWidth="240" MaxWidth="380"/>
                 <ColumnDefinition Width="16"/>
                 <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="16"/>
+                <ColumnDefinition Width="200"/>
             </Grid.ColumnDefinitions>
 
             <!-- Left library -->
@@ -225,7 +220,7 @@
                 </DockPanel>
             </Border>
 
-            <!-- Right form -->
+            <!-- Center form -->
             <Border Grid.Column="2" Background="White" CornerRadius="14" Padding="20"
                     BorderBrush="#E2E8F0" BorderThickness="1">
                 <Grid>
@@ -268,6 +263,17 @@
                         </WrapPanel>
                     </DockPanel>
                 </Grid>
+            </Border>
+
+            <!-- Right toolbar: Import, Backup, Refresh -->
+            <Border Grid.Column="4" Background="White" CornerRadius="14" Padding="16"
+                    BorderBrush="#E2E8F0" BorderThickness="1">
+                <StackPanel VerticalAlignment="Top">
+                    <TextBlock Text="Дії та Управління" FontSize="15" FontWeight="SemiBold" Foreground="#0F172A" Margin="0,0,0,14"/>
+                    <Button Content="Імпортувати DOCX" Click="ImportTemplate_Click" Style="{StaticResource PrimaryButton}" HorizontalAlignment="Stretch" Margin="0,0,0,10"/>
+                    <Button Content="Резервна копія" Click="Backup_Click" Style="{StaticResource GhostButton}" HorizontalAlignment="Stretch" Margin="0,0,0,10"/>
+                    <Button Content="Оновити" Click="Refresh_Click" Style="{StaticResource GhostButton}" HorizontalAlignment="Stretch" Margin="0"/>
+                </StackPanel>
             </Border>
         </Grid>
 
