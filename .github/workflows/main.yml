@@ -1,4 +1,4 @@
-name: Build portable (Mishuig-patch-2)
+name: Build portable (Mishuig-patch-3)
 
 on:
   workflow_dispatch:
@@ -6,10 +6,10 @@ on:
       ref:
         description: 'Гілка або тег для збірки'
         required: true
-        default: 'Mishuig-patch-2'
+        default: 'Mishuig-patch-3'
   push:
     branches:
-      - Mishuig-patch-2
+      - Mishuig-patch-3
 
 permissions:
   contents: read
