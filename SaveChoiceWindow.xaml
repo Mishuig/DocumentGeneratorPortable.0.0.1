@@ -15,7 +15,6 @@
         <StackPanel>
             <TextBlock Text="Збереження документа" FontSize="17" FontWeight="SemiBold" Foreground="#0F172A"/>
             <TextBlock Text="Як зберегти документ?" FontSize="15" FontWeight="SemiBold" Foreground="#0F172A" Margin="0,16,0,4"/>
-            <TextBlock Text="Оберіть спосіб іменування файлу" Foreground="#64748B" FontSize="12"/>
         </StackPanel>
 
         <StackPanel Grid.Row="1" Margin="0,18,0,0">
@@ -62,7 +61,6 @@
                     <TextBlock Text="📝" FontSize="18" Margin="0,0,12,0" VerticalAlignment="Center"/>
                     <StackPanel>
                         <TextBlock Text="Обрати назву файлу самостійно" FontWeight="SemiBold" FontSize="13" Foreground="#0F172A"/>
-                        <TextBlock Text="Відкриється діалог збереження файлу" Foreground="#64748B" FontSize="12" Margin="0,4,0,0"/>
                     </StackPanel>
                 </StackPanel>
             </Button>

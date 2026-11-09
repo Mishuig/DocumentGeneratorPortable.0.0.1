@@ -120,18 +120,15 @@ public partial class MainWindow : Window
                 if (!_fieldOrder.Contains(k, StringComparer.OrdinalIgnoreCase))
                     _fieldOrder.Add(k);
 
-            TemplateInfo.Text =
-                $"Категорія: {_selected.Category} • Змінних: {_fieldOrder.Count}. " +
-                "Перетягуйте поля або використовуйте ▲ ▼. Назви й значення запам'ятовуються.";
+            TemplateInfo.Text = $"Категорія: {_selected.Category} • Змінних: {_fieldOrder.Count}";
 
             if (_fieldOrder.Count == 0)
             {
                 FieldsPanel.Children.Add(new TextBlock
                 {
-                    Text = "У шаблоні не знайдено маркерів {{змінна}}. " +
-                           "Додайте їх у DOCX (наприклад {{ПІБ}}, {{Адреса}}) і повторно імпортуйте файл.",
+                    Text = "У шаблоні немає змінних.",
                     TextWrapping = TextWrapping.Wrap,
-                    Foreground = Brushes.DarkOrange,
+                    Foreground = Brushes.Gray,
                     Margin = new Thickness(0, 4, 0, 12)
                 });
                 return;
@@ -198,8 +195,7 @@ public partial class MainWindow : Window
             Foreground = new SolidColorBrush(Color.FromRgb(0x94, 0xA3, 0xB8)),
             VerticalAlignment = VerticalAlignment.Center,
             Margin = new Thickness(0, 0, 8, 0),
-            Cursor = Cursors.SizeAll,
-            ToolTip = "Перетягніть, щоб змінити порядок"
+            Cursor = Cursors.SizeAll
         };
         DockPanel.SetDock(handle, Dock.Left);
         handle.PreviewMouseLeftButtonDown += FieldCard_PreviewMouseLeftButtonDown;
@@ -311,8 +307,7 @@ public partial class MainWindow : Window
     private void FieldsPanel_Drop(object sender, DragEventArgs e)
     {
         if (!e.Data.GetDataPresent("FieldKey")) return;
-        var sourceKey = e.Data.GetData("FieldKey") as string;
-        if (string.IsNullOrEmpty(sourceKey)) return;
+        if (e.Data.GetData("FieldKey") is not string sourceKey) return;
 
         string? targetKey = null;
         var card = FindParentCard(e.OriginalSource as DependencyObject);
@@ -412,19 +407,15 @@ public partial class MainWindow : Window
         _selected = null;
         ClearFieldUi();
         SelectedTemplateTitle.Text = "Оберіть шаблон";
-        TemplateInfo.Text = "Імпортуйте DOCX або оберіть шаблон зі списку.";
-        FieldsPanel.Children.Add(new TextBlock
-        {
-            Text = "Поля шаблону з'являться тут.",
-            Foreground = Brushes.Gray
-        });
+        TemplateInfo.Text = "";
     }
 
     private static string Humanize(string key)
     {
+        if (string.IsNullOrWhiteSpace(key))
+            return "(порожня змінна)";
         var spaced = System.Text.RegularExpressions.Regex.Replace(key, "([a-zа-яіїєґ])([A-ZА-ЯІЇЄҐ])", "$1 $2");
-        spaced = spaced.Replace('_', ' ').Replace('-', ' ').Replace('.', ' ');
-        return spaced;
+        return spaced.Replace('_', ' ');
     }
 
     private static bool IsMultilineKey(string key) =>
@@ -520,12 +511,6 @@ public partial class MainWindow : Window
 
             _engine.Generate(templatePath, previewPath, values);
             Process.Start(new ProcessStartInfo(previewPath) { UseShellExecute = true });
-
-            MessageBox.Show(
-                "Документ відкрито для перегляду/редагування.\n\n" +
-                "Можете внести правки у Word/LibreOffice і зберегти їх там.\n" +
-                "Щоб зберегти фінальну версію — натисніть «Зберегти документ».",
-                "Перегляд", MessageBoxButton.OK, MessageBoxImage.Information);
         }
         catch (Exception ex) { ShowError("Помилка перегляду", ex); }
     }

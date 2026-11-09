@@ -1,9 +1,10 @@
 <Window x:Class="DocumentGenerator.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="DocuGen" Height="820" Width="1280"
+        Title="Document Generator" Height="820" Width="1280"
         MinHeight="560" MinWidth="960"
         WindowStartupLocation="CenterScreen"
+        Icon="App.ico"
         Background="#E8EEF5">
 
     <Window.Resources>
@@ -20,16 +21,20 @@
         <Style TargetType="Button">
             <Setter Property="Padding" Value="14,8"/>
             <Setter Property="Margin" Value="0,0,8,0"/>
-            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="BorderBrush" Value="Transparent"/>
             <Setter Property="Cursor" Value="Hand"/>
             <Setter Property="Background" Value="#E2E8F0"/>
             <Setter Property="Foreground" Value="#0F172A"/>
             <Setter Property="FontSize" Value="13"/>
-            <Setter Property="MinHeight" Value="36"/>
+            <Setter Property="Height" Value="40"/>
+            <Setter Property="MinHeight" Value="40"/>
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="Button">
                         <Border x:Name="Bd" Background="{TemplateBinding Background}"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="{TemplateBinding BorderThickness}"
                                 CornerRadius="8" Padding="{TemplateBinding Padding}">
                             <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
                         </Border>
@@ -54,14 +59,19 @@
             <Setter Property="Background" Value="{StaticResource Success}"/>
             <Setter Property="Foreground" Value="White"/>
         </Style>
+        <Style x:Key="DangerButton" TargetType="Button" BasedOn="{StaticResource {x:Type Button}}">
+            <Setter Property="Background" Value="#FEF2F2"/>
+            <Setter Property="Foreground" Value="#DC2626"/>
+        </Style>
         <Style x:Key="GhostButton" TargetType="Button" BasedOn="{StaticResource {x:Type Button}}">
             <Setter Property="Background" Value="White"/>
+            <Setter Property="BorderBrush" Value="#CBD5E1"/>
             <Setter Property="BorderThickness" Value="1"/>
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="Button">
                         <Border x:Name="Bd" Background="{TemplateBinding Background}"
-                                BorderBrush="#CBD5E1" BorderThickness="1"
+                                BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}"
                                 CornerRadius="8" Padding="{TemplateBinding Padding}">
                             <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
                         </Border>
@@ -128,24 +138,12 @@
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
-            <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
 
-        <!-- Top bar -->
-        <Border Background="White" BorderBrush="#E2E8F0" BorderThickness="0,0,0,1" Padding="20,14">
-            <DockPanel>
-                <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                    <Border Width="32" Height="32" CornerRadius="8" Background="#CCFBF1" Margin="0,0,10,0">
-                        <TextBlock Text="✎" FontSize="16" HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="#0D9488"/>
-                    </Border>
-                    <TextBlock Text="DocuGen" FontSize="20" FontWeight="SemiBold" Foreground="#0F172A" VerticalAlignment="Center"/>
-                </StackPanel>
-                <StackPanel Orientation="Horizontal" DockPanel.Dock="Right" VerticalAlignment="Center">
-                    <Button Content="Імпортувати DOCX" Click="ImportTemplate_Click" Style="{StaticResource PrimaryButton}"/>
-                    <Button Content="Резервна копія" Click="Backup_Click" Style="{StaticResource GhostButton}"/>
-                    <Button Content="Оновити" Click="Refresh_Click" Style="{StaticResource GhostButton}" Margin="0"/>
-                </StackPanel>
-            </DockPanel>
+        <!-- Top bar: logo only -->
+        <Border Background="White" BorderBrush="#E2E8F0" BorderThickness="0,0,0,1" Padding="20,8">
+            <Image Source="Logo.png" Height="44" HorizontalAlignment="Left" VerticalAlignment="Center"
+                   RenderOptions.BitmapScalingMode="HighQuality" SnapsToDevicePixels="True"/>
         </Border>
 
         <!-- Body -->
@@ -154,6 +152,8 @@
                 <ColumnDefinition Width="300" MinWidth="240" MaxWidth="380"/>
                 <ColumnDefinition Width="16"/>
                 <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="16"/>
+                <ColumnDefinition Width="200"/>
             </Grid.ColumnDefinitions>
 
             <!-- Left library -->
@@ -163,7 +163,6 @@
                     <StackPanel DockPanel.Dock="Top" Margin="0,0,0,12">
                         <TextBlock Text="Бібліотека шаблонів" FontSize="15" FontWeight="SemiBold" Foreground="#0F172A"/>
                         <TextBox x:Name="SearchBox" Margin="0,10,0,6"
-                                 ToolTip="Пошук за назвою або категорією"
                                  TextChanged="SearchBox_TextChanged"
                                  Tag="search">
                             <TextBox.Style>
@@ -173,7 +172,6 @@
                                 </Style>
                             </TextBox.Style>
                         </TextBox>
-                        <TextBlock Text="Оберіть шаблон зі списку" Foreground="#94A3B8" FontSize="11"/>
                     </StackPanel>
                     <ListBox x:Name="TemplatesList" BorderThickness="0" Background="Transparent"
                              ScrollViewer.HorizontalScrollBarVisibility="Disabled"
@@ -225,7 +223,7 @@
                 </DockPanel>
             </Border>
 
-            <!-- Right form -->
+            <!-- Center form -->
             <Border Grid.Column="2" Background="White" CornerRadius="14" Padding="20"
                     BorderBrush="#E2E8F0" BorderThickness="1">
                 <Grid>
@@ -241,7 +239,7 @@
                                    FontSize="18" FontWeight="SemiBold" Foreground="#0F172A"
                                    TextWrapping="Wrap"/>
                         <TextBlock x:Name="TemplateInfo"
-                                   Text="Після імпорту DOCX тут з'явиться інформація про змінні."
+                                   Text=""
                                    Foreground="#64748B" Margin="0,4,0,8" TextWrapping="Wrap" FontSize="12"/>
                     </StackPanel>
 
@@ -253,26 +251,38 @@
                                     AllowDrop="True"
                                     Drop="FieldsPanel_Drop"
                                     DragOver="FieldsPanel_DragOver">
-                            <TextBlock Text="Поля шаблону з'являться тут." Foreground="#94A3B8"/>
                         </StackPanel>
                     </ScrollViewer>
 
-                    <DockPanel Grid.Row="3" Margin="0,16,0,0">
-                        <Button DockPanel.Dock="Right" Content="Видалити шаблон" Click="Delete_Click"
-                                Foreground="#DC2626" Background="#FEF2F2" Margin="0"/>
-                        <WrapPanel>
-                            <Button Content="Відкрити шаблон" Click="OpenTemplate_Click" Style="{StaticResource GhostButton}"/>
-                            <Button Content="Очистити поля" Click="ClearFields_Click" Style="{StaticResource GhostButton}"/>
-                            <Button Content="Перегляд" Click="Preview_Click" Style="{StaticResource PrimaryButton}"/>
-                            <Button Content="Зберегти документ" Click="Generate_Click" Style="{StaticResource SuccessButton}" Margin="0"/>
-                        </WrapPanel>
-                    </DockPanel>
+                    <Grid Grid.Row="3" Margin="-4,12,-4,-4">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/><ColumnDefinition Width="*"/><ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*"/><ColumnDefinition Width="*"/><ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                        </Grid.RowDefinitions>
+                        <Button Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" Margin="4" Content="Відкрити шаблон" Click="OpenTemplate_Click" Style="{StaticResource GhostButton}"/>
+                        <Button Grid.Row="0" Grid.Column="2" Grid.ColumnSpan="2" Margin="4" Content="Очистити поля" Click="ClearFields_Click" Style="{StaticResource GhostButton}"/>
+                        <Button Grid.Row="0" Grid.Column="4" Grid.ColumnSpan="2" Margin="4" Content="Видалити шаблон" Click="Delete_Click" Style="{StaticResource DangerButton}"/>
+                        <Button Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="3" Margin="4" Content="Перегляд" Click="Preview_Click" Style="{StaticResource PrimaryButton}"/>
+                        <Button Grid.Row="1" Grid.Column="3" Grid.ColumnSpan="3" Margin="4" Content="Зберегти документ" Click="Generate_Click" Style="{StaticResource SuccessButton}"/>
+                    </Grid>
                 </Grid>
+            </Border>
+
+            <!-- Right toolbar: Import, Backup, Refresh -->
+            <Border Grid.Column="4" Background="White" CornerRadius="14" Padding="16"
+                    BorderBrush="#E2E8F0" BorderThickness="1">
+                <StackPanel VerticalAlignment="Top">
+                    <TextBlock Text="Дії та Управління" FontSize="15" FontWeight="SemiBold" Foreground="#0F172A" Margin="0,0,0,14"/>
+                    <Button Content="Імпортувати DOCX" Click="ImportTemplate_Click" Style="{StaticResource PrimaryButton}" HorizontalAlignment="Stretch" Margin="0,0,0,10"/>
+                    <Button Content="Резервна копія" Click="Backup_Click" Style="{StaticResource GhostButton}" HorizontalAlignment="Stretch" Margin="0,0,0,10"/>
+                    <Button Content="Оновити" Click="Refresh_Click" Style="{StaticResource GhostButton}" HorizontalAlignment="Stretch" Margin="0"/>
+                </StackPanel>
             </Border>
         </Grid>
 
-        <TextBlock Grid.Row="2" Margin="20,0,20,12"
-                   Text="Portable mode • кириличні змінні • перетягування полів • значення запам'ятовуються"
-                   Foreground="#94A3B8" FontSize="11" TextWrapping="Wrap"/>
     </Grid>
 </Window>
