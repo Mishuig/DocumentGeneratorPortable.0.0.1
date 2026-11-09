@@ -89,3 +89,40 @@ public sealed class FitTextBlock : FrameworkElement
             var candidate = first[..len] + "...";
             if (WidthOf(candidate) <= width) return candidate;
         }
+        return WidthOf("...") <= width ? "..." : string.Empty;
+    }
+
+    protected override void OnRender(DrawingContext dc)
+    {
+        var width = ActualWidth;
+        if (width <= 0) return;
+        var text = Text ?? string.Empty;
+        var fitted = Fit(text, width);
+        ToolTip = fitted.Length != text.Length && text.Length > 0 ? text : null;
+        if (fitted.Length == 0) return;
+
+        var ft = Format(fitted);
+        var x = Centered ? Math.Max(0, (width - ft.WidthIncludingTrailingWhitespace) / 2) : 0;
+        var y = Math.Max(0, (ActualHeight - ft.Height) / 2);
+        dc.DrawText(ft, new Point(x, y));
+    }
+} // <--- Закриваюча дужка класу FitTextBlock
+
+/// <summary>Кнопка з текстом, що скорочується за доступною шириною (див. FitTextBlock).</summary>
+public class FitButton : Button
+{
+    public static readonly DependencyProperty TextProperty = DependencyProperty.Register(
+        nameof(Text), typeof(string), typeof(FitButton),
+        new PropertyMetadata(string.Empty, (d, e) => ((FitButton)d)._label.Text = e.NewValue as string ?? string.Empty));
+
+    private readonly FitTextBlock _label = new()
+    {
+        Centered = true,
+        HorizontalAlignment = HorizontalAlignment.Stretch,
+        VerticalAlignment = VerticalAlignment.Center
+    };
+
+    public string Text { get => (string)GetValue(TextProperty); set => SetValue(TextProperty, value); }
+
+    public FitButton() { Content = _label; }
+}
