@@ -15,7 +15,6 @@
         <StackPanel>
             <TextBlock Text="Збереження документа" FontSize="17" FontWeight="SemiBold" Foreground="#0F172A"/>
             <TextBlock Text="Як зберегти документ?" FontSize="15" FontWeight="SemiBold" Foreground="#0F172A" Margin="0,16,0,4"/>
-            <TextBlock Text="Оберіть спосіб іменування файлу" Foreground="#64748B" FontSize="12"/>
         </StackPanel>
 
         <StackPanel Grid.Row="1" Margin="0,18,0,0">
@@ -62,23 +61,13 @@
                     <TextBlock Text="📝" FontSize="18" Margin="0,0,12,0" VerticalAlignment="Center"/>
                     <StackPanel>
                         <TextBlock Text="Обрати назву файлу самостійно" FontWeight="SemiBold" FontSize="13" Foreground="#0F172A"/>
-                        <TextBlock Text="Відкриється діалог збереження файлу" Foreground="#64748B" FontSize="12" Margin="0,4,0,0"/>
                     </StackPanel>
                 </StackPanel>
             </Button>
         </StackPanel>
 
         <Button Grid.Row="2" Content="Скасувати" Click="Cancel_Click" IsCancel="True"
-                Margin="0,18,0,0" Padding="16,12" Cursor="Hand"
-                Background="#0D9488" Foreground="White" BorderThickness="0"
-                HorizontalAlignment="Stretch">
-            <Button.Template>
-                <ControlTemplate TargetType="Button">
-                    <Border Background="{TemplateBinding Background}" CornerRadius="8" Padding="{TemplateBinding Padding}">
-                        <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                    </Border>
-                </ControlTemplate>
-            </Button.Template>
-        </Button>
+                Style="{StaticResource DialogSecondaryButton}"
+                HorizontalAlignment="Right" Margin="0,20,0,0"/>
     </Grid>
 </Window>

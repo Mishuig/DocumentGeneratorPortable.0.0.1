@@ -4,8 +4,8 @@
         Title="Налаштування шаблону" Height="280" Width="460"
         MinHeight="240" MinWidth="400"
         WindowStartupLocation="CenterOwner" ResizeMode="NoResize"
-        Background="#F4F6FA">
-    <Grid Margin="24">
+        Background="#F8FAFC">
+    <Grid Margin="28">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
@@ -16,22 +16,17 @@
         </Grid.RowDefinitions>
 
         <TextBlock Text="Назва шаблону" FontWeight="SemiBold" Foreground="#17243A"/>
-        <TextBox x:Name="NameBox" Grid.Row="1" Margin="0,6,0,14" Padding="10,8"
+        <TextBox x:Name="NameBox" Grid.Row="1" Margin="0,8,0,20" Padding="12,10"
                  BorderBrush="#CBD5E1" BorderThickness="1"/>
 
         <TextBlock Grid.Row="2" Text="Категорія" FontWeight="SemiBold" Foreground="#17243A"/>
-        <TextBox x:Name="CategoryBox" Grid.Row="3" Margin="0,6,0,0" Padding="10,8"
+        <TextBox x:Name="CategoryBox" Grid.Row="3" Margin="0,8,0,0" Padding="12,10"
                  BorderBrush="#CBD5E1" BorderThickness="1"/>
 
-        <StackPanel Grid.Row="5" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,20,0,0">
-            <Button Content="Скасувати" IsCancel="True"
-                    Padding="18,9" Margin="0,0,10,0"
-                    Background="#E8EDF5" Foreground="#24344D"
-                    BorderThickness="0" Cursor="Hand"/>
-            <Button Content="Зберегти" IsDefault="True" Click="Save_Click"
-                    Padding="18,9"
-                    Background="#2457A7" Foreground="White"
-                    BorderThickness="0" Cursor="Hand"/>
+        <StackPanel Grid.Row="5" Orientation="Horizontal" HorizontalAlignment="Right"
+                    VerticalAlignment="Bottom" Margin="0,24,0,0">
+            <Button Content="Скасувати" IsCancel="True" Style="{StaticResource DialogSecondaryButton}" Margin="0,0,10,0"/>
+            <Button Content="Зберегти" IsDefault="True" Click="Save_Click" Style="{StaticResource DialogPrimaryButton}"/>
         </StackPanel>
     </Grid>
 </Window>
