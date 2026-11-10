@@ -11,10 +11,25 @@ public sealed class TemplateService
     public async Task<List<TemplateRecord>> GetAllAsync(string? search = null)
     {
         await using var db = new AppDbContext();
-        var query = db.Templates.AsNoTracking();
+        // Завантажуємо з SQLite, фільтруємо в пам'яті:
+        // SQLite lower()/LIKE за замовчуванням погано працюють з кирилицею,
+        // а StringComparison.OrdinalIgnoreCase коректно обробляє українські літери, цифри та спецсимволи.
+        var items = await db.Templates.AsNoTracking().ToListAsync();
         if (!string.IsNullOrWhiteSpace(search))
-            query = query.Where(x => x.Name.Contains(search) || x.Category.Contains(search));
-        return await query.OrderBy(x => x.Category).ThenBy(x => x.Name).ToListAsync();
+        {
+            var term = search.Trim();
+            items = items
+                .Where(x =>
+                    (!string.IsNullOrEmpty(x.Name) &&
+                     x.Name.Contains(term, StringComparison.OrdinalIgnoreCase)) ||
+                    (!string.IsNullOrEmpty(x.Category) &&
+                     x.Category.Contains(term, StringComparison.OrdinalIgnoreCase)))
+                .ToList();
+        }
+        return items
+            .OrderBy(x => x.Category, StringComparer.OrdinalIgnoreCase)
+            .ThenBy(x => x.Name, StringComparer.OrdinalIgnoreCase)
+            .ToList();
     }
 
     public async Task<TemplateRecord> ImportAsync(string sourcePath)
