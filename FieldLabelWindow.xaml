@@ -1,62 +1,34 @@
 <Window x:Class="DocumentGenerator.FieldLabelWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="Редагування поля форми" Height="280" Width="440"
-        MinHeight="240" MinWidth="380"
-        WindowStartupLocation="CenterOwner" ResizeMode="NoResize"
-        Background="White">
-    <Border BorderBrush="#E2E8F0" BorderThickness="1" CornerRadius="12" Margin="0" Padding="24">
-        <Grid>
-            <Grid.RowDefinitions>
-                <RowDefinition Height="Auto"/>
-                <RowDefinition Height="Auto"/>
-                <RowDefinition Height="Auto"/>
-                <RowDefinition Height="*"/>
-                <RowDefinition Height="Auto"/>
-            </Grid.RowDefinitions>
+        Title="Редагування поля форми" Width="460" SizeToContent="Height"
+        WindowStartupLocation="CenterOwner" ResizeMode="NoResize" ShowInTaskbar="False"
+        Background="White" UseLayoutRounding="True">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
 
-            <TextBlock Text="Редагування поля форми" FontSize="17" FontWeight="SemiBold" Foreground="#0F172A"/>
-            <TextBlock Grid.Row="1" Text="Відображувана назва поля" FontWeight="SemiBold"
-                       Foreground="#0F172A" Margin="0,18,0,2"/>
-            <TextBlock Grid.Row="1" Text="Не змінює змінну в шаблоні DOCX" Foreground="#94A3B8"
-                       FontSize="12" Margin="0,36,0,0"/>
+        <StackPanel Margin="24,24,24,24">
+            <TextBlock Text="Редагування поля форми" Style="{StaticResource DialogTitle}" Margin="0,0,0,20"/>
 
-            <TextBox x:Name="LabelBox" Grid.Row="2" Margin="0,28,0,0" Padding="12,10" FontSize="13"
-                     BorderBrush="#CBD5E1" BorderThickness="1" Background="#F8FAFC">
-                <TextBox.Resources>
-                    <Style TargetType="Border">
-                        <Setter Property="CornerRadius" Value="8"/>
-                    </Style>
-                </TextBox.Resources>
-            </TextBox>
+            <TextBlock Text="Відображувана назва поля" Style="{StaticResource DialogLabel}"/>
+            <TextBox x:Name="LabelBox" Style="{StaticResource DialogInput}"/>
+        </StackPanel>
 
-            <TextBlock x:Name="KeyHint" Grid.Row="3" Foreground="#94A3B8" FontSize="12" Margin="0,10,0,0"
-                       TextWrapping="Wrap"/>
-
-            <StackPanel Grid.Row="4" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,20,0,0">
-                <Button Content="Скасувати" IsCancel="True" Click="Cancel_Click"
-                        Padding="18,9" Margin="0,0,10,0" Cursor="Hand"
-                        Background="#F1F5F9" Foreground="#0F172A" BorderThickness="0">
-                    <Button.Template>
-                        <ControlTemplate TargetType="Button">
-                            <Border Background="{TemplateBinding Background}" CornerRadius="8" Padding="{TemplateBinding Padding}">
-                                <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                            </Border>
-                        </ControlTemplate>
-                    </Button.Template>
-                </Button>
-                <Button Content="Зберегти" IsDefault="True" Click="Save_Click"
-                        Padding="18,9" Cursor="Hand"
-                        Background="#0D9488" Foreground="White" BorderThickness="0">
-                    <Button.Template>
-                        <ControlTemplate TargetType="Button">
-                            <Border Background="{TemplateBinding Background}" CornerRadius="8" Padding="{TemplateBinding Padding}">
-                                <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                            </Border>
-                        </ControlTemplate>
-                    </Button.Template>
-                </Button>
-            </StackPanel>
-        </Grid>
-    </Border>
+        <Border Grid.Row="1" Style="{StaticResource DialogFooter}">
+            <Grid HorizontalAlignment="Right">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" MinWidth="120"/>
+                    <ColumnDefinition Width="12"/>
+                    <ColumnDefinition Width="Auto" MinWidth="120"/>
+                </Grid.ColumnDefinitions>
+                <Button Grid.Column="0" Content="Скасувати" IsCancel="True" Click="Cancel_Click"
+                        Style="{StaticResource DialogSecondaryButton}"/>
+                <Button Grid.Column="2" Content="Зберегти" IsDefault="True" Click="Save_Click"
+                        Style="{StaticResource DialogPrimaryButton}"/>
+            </Grid>
+        </Border>
+    </Grid>
 </Window>
