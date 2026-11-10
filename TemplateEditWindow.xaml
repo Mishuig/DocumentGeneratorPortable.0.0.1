@@ -4,7 +4,7 @@
         Title="Налаштування шаблону" Height="280" Width="460"
         MinHeight="240" MinWidth="400"
         WindowStartupLocation="CenterOwner" ResizeMode="NoResize"
-        Background="#F4F6FA">
+        Background="White">
     <Grid Margin="24">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
@@ -15,23 +15,67 @@
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
 
-        <TextBlock Text="Назва шаблону" FontWeight="SemiBold" Foreground="#17243A"/>
-        <TextBox x:Name="NameBox" Grid.Row="1" Margin="0,6,0,14" Padding="10,8"
-                 BorderBrush="#CBD5E1" BorderThickness="1"/>
+        <TextBlock Text="Налаштування шаблону" FontSize="17" FontWeight="SemiBold" Foreground="#0F172A" Margin="0,0,0,18"/>
 
-        <TextBlock Grid.Row="2" Text="Категорія" FontWeight="SemiBold" Foreground="#17243A"/>
-        <TextBox x:Name="CategoryBox" Grid.Row="3" Margin="0,6,0,0" Padding="10,8"
-                 BorderBrush="#CBD5E1" BorderThickness="1"/>
+        <TextBlock Grid.Row="1" Text="Назва шаблону" FontWeight="SemiBold" Foreground="#0F172A"/>
+        <TextBox x:Name="NameBox" Grid.Row="2" Margin="0,8,0,16" Padding="12,10"
+                 BorderBrush="#CBD5E1" BorderThickness="1" Background="#F8FAFC" FontSize="13">
+            <TextBox.Resources>
+                <Style TargetType="Border">
+                    <Setter Property="CornerRadius" Value="8"/>
+                </Style>
+            </TextBox.Resources>
+        </TextBox>
 
-        <StackPanel Grid.Row="5" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,20,0,0">
+        <TextBlock Grid.Row="3" Text="Категорія" FontWeight="SemiBold" Foreground="#0F172A"/>
+        <TextBox x:Name="CategoryBox" Grid.Row="4" Margin="0,8,0,0" Padding="12,10"
+                 BorderBrush="#CBD5E1" BorderThickness="1" Background="#F8FAFC" FontSize="13"
+                 VerticalAlignment="Top">
+            <TextBox.Resources>
+                <Style TargetType="Border">
+                    <Setter Property="CornerRadius" Value="8"/>
+                </Style>
+            </TextBox.Resources>
+        </TextBox>
+
+        <!-- Unified button bar: Cancel (secondary) + Save (primary accent) -->
+        <StackPanel Grid.Row="5" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,24,0,0">
             <Button Content="Скасувати" IsCancel="True"
-                    Padding="18,9" Margin="0,0,10,0"
-                    Background="#E8EDF5" Foreground="#24344D"
-                    BorderThickness="0" Cursor="Hand"/>
+                    Padding="18,10" Margin="0,0,10,0" Cursor="Hand"
+                    Background="#F1F5F9" Foreground="#0F172A" BorderThickness="0"
+                    MinWidth="100">
+                <Button.Template>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="Bd" Background="{TemplateBinding Background}"
+                                CornerRadius="8" Padding="{TemplateBinding Padding}">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="Bd" Property="Background" Value="#E2E8F0"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Button.Template>
+            </Button>
             <Button Content="Зберегти" IsDefault="True" Click="Save_Click"
-                    Padding="18,9"
-                    Background="#2457A7" Foreground="White"
-                    BorderThickness="0" Cursor="Hand"/>
+                    Padding="18,10" Cursor="Hand"
+                    Background="#0D9488" Foreground="White" BorderThickness="0"
+                    MinWidth="100">
+                <Button.Template>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="Bd" Background="{TemplateBinding Background}"
+                                CornerRadius="8" Padding="{TemplateBinding Padding}">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="Bd" Property="Opacity" Value="0.9"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Button.Template>
+            </Button>
         </StackPanel>
     </Grid>
 </Window>

@@ -4,7 +4,7 @@ Windows desktop application for importing DOCX templates, filling `{{placeholder
 
 ## Current build status
 
-Version 0.2.0 — expanded MVP source. The project has not yet been compiled or smoke-tested on Windows in this environment. Do not treat this source archive as a verified production binary.
+Version 0.5.4 — UI layout fixes (consistent modal buttons/CTA colors, «Видалити шаблон» moved to «Дії та Управління»). Release build succeeds. For a ready portable EXE use GitHub Actions (see README-GITHUB-BUILD.md) or `build-portable.cmd` on Windows.
 
 ### Implemented
 - WPF desktop interface (Ukrainian UI).
@@ -55,7 +55,7 @@ Copy the entire `publish\win-x64` folder to a writable location (for example, `C
 проживаю за адресою: {{address}}.
 ```
 
-Variable names support Latin letters, digits, `_`, `-`, and `.`.
+Variable names: everything between `{{` and `}}` is a variable (any language, spaces, dots, quotes, symbols; empty `{{}}` too).
 
 ## Important
 This is an in-progress application. Before using it for legally significant documents, test every template and generated output in Microsoft Word or LibreOffice, compare pagination, paragraph layout, tables, headers/footers, and verify all personal and financial details. Keep backups of original templates.
@@ -66,3 +66,12 @@ For a one-click build on Windows, double-click `build-portable.cmd`. It invokes 
 ## Автоматична збірка через GitHub Actions
 
 Інструкція українською: див. `README-GITHUB-BUILD.md`. Workflow `.github/workflows/build-windows.yml` збирає self-contained Windows x64 ZIP на GitHub Actions; локальний .NET SDK не потрібен.
+
+## Ярлик
+Після збірки/розпакування запустіть `Create-Shortcut.cmd` — він створить ярлик з логотипом на робочому столі та в меню «Пуск». Іконка самого `DocumentGenerator.exe` також оновлена (`App.ico`).
+
+## Адаптивна верстка (0.5.4)
+- Вікно можна зменшувати до 60×60 (Windows сам обмежує мінімум системною межею для вікон із заголовком).
+- Шрифт і кнопки зменшуються разом із вікном; шрифт — не менше 10.
+- Коли тексту не вистачає місця: спочатку прибираються слова з кінця, потім літери з додаванням «...».
+- Розкладка: широке вікно — 3 колонки; половина екрана (≈400–760 px) — ліворуч бібліотека та дії, праворуч форма; вузьке — усе в один стовпчик; менше ~150 px — лише логотип.

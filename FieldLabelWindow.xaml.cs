@@ -10,7 +10,6 @@ public partial class FieldLabelWindow : Window
     {
         InitializeComponent();
         LabelBox.Text = currentLabel;
-        KeyHint.Text = $"Змінна в шаблоні: {{{{{variableKey}}}}}";
         LabelBox.Focus();
         LabelBox.SelectAll();
     }
