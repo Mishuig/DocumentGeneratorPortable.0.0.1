@@ -1,84 +1,49 @@
 <Window x:Class="DocumentGenerator.SaveChoiceWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="Збереження документа" Height="380" Width="480"
-        MinHeight="340" MinWidth="420"
-        WindowStartupLocation="CenterOwner" ResizeMode="NoResize"
-        Background="White">
-    <Grid Margin="24">
+        Title="Збереження документа" Width="480" SizeToContent="Height"
+        WindowStartupLocation="CenterOwner" ResizeMode="NoResize" ShowInTaskbar="False"
+        Background="White" UseLayoutRounding="True">
+    <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
-            <RowDefinition Height="*"/>
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
 
-        <StackPanel>
-            <TextBlock Text="Збереження документа" FontSize="17" FontWeight="SemiBold" Foreground="#0F172A"/>
-            <TextBlock Text="Як зберегти документ?" FontSize="15" FontWeight="SemiBold" Foreground="#0F172A" Margin="0,16,0,4"/>
-            <TextBlock Text="Оберіть спосіб іменування файлу" Foreground="#64748B" FontSize="12"/>
-        </StackPanel>
+        <StackPanel Margin="24,24,24,24">
+            <TextBlock Text="Збереження документа" Style="{StaticResource DialogTitle}"/>
+            <TextBlock Text="Як зберегти документ?" Style="{StaticResource DialogSubtitle}" Margin="0,4,0,20"/>
 
-        <StackPanel Grid.Row="1" Margin="0,18,0,0">
-            <Button Click="AutoName_Click" Margin="0,0,0,12" Cursor="Hand" HorizontalContentAlignment="Stretch">
-                <Button.Template>
-                    <ControlTemplate TargetType="Button">
-                        <Border x:Name="Bd" Background="#F8FAFC" BorderBrush="#E2E8F0" BorderThickness="1"
-                                CornerRadius="10" Padding="16">
-                            <ContentPresenter/>
-                        </Border>
-                        <ControlTemplate.Triggers>
-                            <Trigger Property="IsMouseOver" Value="True">
-                                <Setter TargetName="Bd" Property="Background" Value="#F0FDFA"/>
-                                <Setter TargetName="Bd" Property="BorderBrush" Value="#99F6E4"/>
-                            </Trigger>
-                        </ControlTemplate.Triggers>
-                    </ControlTemplate>
-                </Button.Template>
-                <StackPanel Orientation="Horizontal">
-                    <TextBlock Text="📄" FontSize="18" Margin="0,0,12,0" VerticalAlignment="Center"/>
-                    <StackPanel>
-                        <TextBlock Text="Зберегти зі згенерованою назвою" FontWeight="SemiBold" FontSize="13" Foreground="#0F172A"/>
-                        <TextBlock x:Name="AutoNamePreview" Text="" Foreground="#64748B" FontSize="12" Margin="0,4,0,0" TextWrapping="Wrap"/>
+            <!-- Обидві картки — однакові стилі, без зовнішніх Margin => однакова ширина -->
+            <Button Click="AutoName_Click" Style="{StaticResource OptionCardButton}" Margin="0,0,0,12">
+                <DockPanel>
+                    <TextBlock DockPanel.Dock="Left" Text="📄" FontSize="20" Width="32"
+                               VerticalAlignment="Center"/>
+                    <StackPanel VerticalAlignment="Center">
+                        <TextBlock Text="Зберегти зі згенерованою назвою" FontWeight="SemiBold" FontSize="13"
+                                   Foreground="{StaticResource TextMain}"/>
+                        <TextBlock x:Name="AutoNamePreview" Foreground="{StaticResource TextMuted}" FontSize="12"
+                                   Margin="0,4,0,0" TextWrapping="Wrap"/>
                     </StackPanel>
-                </StackPanel>
+                </DockPanel>
             </Button>
 
-            <Button Click="CustomName_Click" Cursor="Hand" HorizontalContentAlignment="Stretch">
-                <Button.Template>
-                    <ControlTemplate TargetType="Button">
-                        <Border x:Name="Bd" Background="#F8FAFC" BorderBrush="#E2E8F0" BorderThickness="1"
-                                CornerRadius="10" Padding="16">
-                            <ContentPresenter/>
-                        </Border>
-                        <ControlTemplate.Triggers>
-                            <Trigger Property="IsMouseOver" Value="True">
-                                <Setter TargetName="Bd" Property="Background" Value="#F0FDFA"/>
-                                <Setter TargetName="Bd" Property="BorderBrush" Value="#99F6E4"/>
-                            </Trigger>
-                        </ControlTemplate.Triggers>
-                    </ControlTemplate>
-                </Button.Template>
-                <StackPanel Orientation="Horizontal">
-                    <TextBlock Text="📝" FontSize="18" Margin="0,0,12,0" VerticalAlignment="Center"/>
-                    <StackPanel>
-                        <TextBlock Text="Обрати назву файлу самостійно" FontWeight="SemiBold" FontSize="13" Foreground="#0F172A"/>
-                        <TextBlock Text="Відкриється діалог збереження файлу" Foreground="#64748B" FontSize="12" Margin="0,4,0,0"/>
+            <Button Click="CustomName_Click" Style="{StaticResource OptionCardButton}">
+                <DockPanel MinHeight="40">
+                    <TextBlock DockPanel.Dock="Left" Text="📝" FontSize="20" Width="32"
+                               VerticalAlignment="Center"/>
+                    <StackPanel VerticalAlignment="Center">
+                        <TextBlock Text="Обрати назву файлу самостійно" FontWeight="SemiBold" FontSize="13"
+                                   Foreground="{StaticResource TextMain}"/>
                     </StackPanel>
-                </StackPanel>
+                </DockPanel>
             </Button>
         </StackPanel>
 
-        <Button Grid.Row="2" Content="Скасувати" Click="Cancel_Click" IsCancel="True"
-                Margin="0,18,0,0" Padding="16,12" Cursor="Hand"
-                Background="#0D9488" Foreground="White" BorderThickness="0"
-                HorizontalAlignment="Stretch">
-            <Button.Template>
-                <ControlTemplate TargetType="Button">
-                    <Border Background="{TemplateBinding Background}" CornerRadius="8" Padding="{TemplateBinding Padding}">
-                        <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                    </Border>
-                </ControlTemplate>
-            </Button.Template>
-        </Button>
+        <!-- «Скасувати» — вторинна кнопка, праворуч, тих самих розмірів, що й в інших діалогах -->
+        <Border Grid.Row="1" Style="{StaticResource DialogFooter}">
+            <Button Content="Скасувати" IsCancel="True" Click="Cancel_Click" HorizontalAlignment="Right"
+                    Style="{StaticResource DialogSecondaryButton}"/>
+        </Border>
     </Grid>
 </Window>

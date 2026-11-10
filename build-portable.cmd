@@ -9,5 +9,7 @@ if errorlevel 1 (
   exit /b 1
 )
 echo.
-echo Portable app is in: %~dp0publish\win-x64
+echo Done. Portable app: %~dp0publish\win-x64
+echo Portable ZIP:       %~dp0publish
+start "" "%~dp0publish"
 pause
