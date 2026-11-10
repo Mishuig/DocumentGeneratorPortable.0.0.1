@@ -6,11 +6,11 @@ on:
       source_branch:
         description: Branch to build
         required: true
-        default: Mishuig-patch-4
+        default: Mishuig-patch-5
         type: string
   push:
     branches:
-      - Mishuig-patch-4
+      - Mishuig-patch-5
     paths:
       - '**.cs'
       - '**.xaml'
@@ -68,12 +68,12 @@ jobs:
           Copy-Item .\Create-Shortcut.cmd .\publish\app\Create-Shortcut.cmd -ErrorAction SilentlyContinue
           if (Test-Path .\samples) { Copy-Item .\samples .\publish\app\samples -Recurse -Force }
 
-          Compress-Archive -Path .\publish\app\* -DestinationPath .\publish\DocumentGenerator-Mishuig-patch-4-portable-win-x64.zip -Force
+          Compress-Archive -Path .\publish\app\* -DestinationPath .\publish\DocumentGenerator-Mishuig-patch-5-portable-win-x64.zip -Force
 
       - name: Upload portable ZIP
         uses: actions/upload-artifact@v4
         with:
-          name: DocumentGenerator-Mishuig-patch-4-portable-win-x64
-          path: publish/DocumentGenerator-Mishuig-patch-4-portable-win-x64.zip
+          name: DocumentGenerator-Mishuig-patch-5-portable-win-x64
+          path: publish/DocumentGenerator-Mishuig-patch-5-portable-win-x64.zip
           if-no-files-found: error
           retention-days: 14
