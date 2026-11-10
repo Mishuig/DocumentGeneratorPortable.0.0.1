@@ -1,54 +1,58 @@
-name: Build portable (Mishuig-patch-5)
+name: Build portable (Mishuig-patch-6)
 
 on:
   workflow_dispatch:
-    inputs:
-      source_branch:
-        description: Branch to build
-        required: true
-        default: Mishuig-patch-5
-        type: string
   push:
     branches:
-      - Mishuig-patch-5
-    paths:
-      - '**.cs'
-      - '**.xaml'
-      - '**.csproj'
-      - '**.props'
-      - '**.targets'
-      - '**.png'
-      - '**.ico'
-      - 'samples/**'
-      - '.github/workflows/build-portable.yml'
+      - Mishuig-patch-6
 
 permissions:
   contents: read
 
+concurrency:
+  group: build-portable-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   build:
-    name: Publish Windows x64 portable
     runs-on: windows-latest
     steps:
-      - name: Checkout selected branch
+      - name: Checkout source
         uses: actions/checkout@v4
-        with:
-          ref: ${{ github.event_name == 'workflow_dispatch' && inputs.source_branch || github.ref_name }}
 
       - name: Install .NET 10 SDK
         uses: actions/setup-dotnet@v4
         with:
           dotnet-version: 10.0.x
 
-      - name: Restore dependencies
+      - name: Locate project and read version
+        id: proj
         shell: pwsh
-        run: dotnet restore .\DocumentGenerator.csproj --runtime win-x64
+        run: |
+          $csproj = Get-ChildItem -Path . -Recurse -Filter DocumentGenerator.csproj |
+                    Select-Object -First 1
+          if (-not $csproj) { throw 'DocumentGenerator.csproj not found in repository.' }
+          $dir = $csproj.DirectoryName
+          $v = ([xml](Get-Content $csproj.FullName)).Project.PropertyGroup.Version |
+               Where-Object { $_ } | Select-Object -First 1
+          if (-not $v) { $v = '0.0.0' }
+          "csproj=$($csproj.FullName)" >> $env:GITHUB_OUTPUT
+          "dir=$dir" >> $env:GITHUB_OUTPUT
+          "version=$v" >> $env:GITHUB_OUTPUT
+          Write-Host "Project: $($csproj.FullName)  Version: $v"
 
-      - name: Publish self-contained single-file app
+      - name: Restore dependencies
+        run: dotnet restore "${{ steps.proj.outputs.csproj }}" --runtime win-x64
+
+      - name: Publish self-contained Windows x64 app and pack ZIP
         shell: pwsh
         run: |
           $ErrorActionPreference = 'Stop'
-          dotnet publish .\DocumentGenerator.csproj `
+          $dir     = '${{ steps.proj.outputs.dir }}'
+          $version = '${{ steps.proj.outputs.version }}'
+          $package = Join-Path $env:GITHUB_WORKSPACE 'publish\DocumentGenerator-portable-win-x64'
+          New-Item -ItemType Directory -Force -Path $package | Out-Null
+          dotnet publish '${{ steps.proj.outputs.csproj }}' `
             --configuration Release `
             --runtime win-x64 `
             --self-contained true `
@@ -58,22 +62,28 @@ jobs:
             -p:EnableCompressionInSingleFile=true `
             -p:DebugType=None `
             -p:DebugSymbols=false `
-            --output .\publish\app
+            --output $package
           if ($LASTEXITCODE -ne 0) { throw 'dotnet publish failed.' }
-          if (-not (Test-Path .\publish\app\DocumentGenerator.exe)) { throw 'DocumentGenerator.exe was not produced.' }
+          if (-not (Test-Path (Join-Path $package 'DocumentGenerator.exe'))) { throw 'DocumentGenerator.exe was not produced.' }
 
-          Copy-Item .\README.md .\publish\app\README.txt -ErrorAction SilentlyContinue
-          Copy-Item .\App.ico .\publish\app\App.ico -ErrorAction SilentlyContinue
-          Copy-Item .\create-shortcut.ps1 .\publish\app\create-shortcut.ps1 -ErrorAction SilentlyContinue
-          Copy-Item .\Create-Shortcut.cmd .\publish\app\Create-Shortcut.cmd -ErrorAction SilentlyContinue
-          if (Test-Path .\samples) { Copy-Item .\samples .\publish\app\samples -Recurse -Force }
+          # Необов'язкові додатки — копіюємо лише якщо є
+          foreach ($f in 'App.ico','create-shortcut.ps1','Create-Shortcut.cmd') {
+            $src = Join-Path $dir $f
+            if (Test-Path $src) { Copy-Item $src $package -Force }
+          }
+          $readme = Join-Path $dir 'README.md'
+          if (Test-Path $readme) { Copy-Item $readme (Join-Path $package 'README.txt') }
+          $samples = Join-Path $dir 'samples'
+          if (Test-Path $samples) { Copy-Item $samples (Join-Path $package 'samples') -Recurse -Force }
 
-          Compress-Archive -Path .\publish\app\* -DestinationPath .\publish\DocumentGenerator-Mishuig-patch-5-portable-win-x64.zip -Force
+          $zip = Join-Path $env:GITHUB_WORKSPACE "publish\DocumentGenerator-$version-portable-win-x64.zip"
+          Compress-Archive -Path (Join-Path $package '*') -DestinationPath $zip -Force
+          Write-Host "Portable package created: $zip"
 
       - name: Upload portable ZIP
         uses: actions/upload-artifact@v4
         with:
-          name: DocumentGenerator-Mishuig-patch-5-portable-win-x64
-          path: publish/DocumentGenerator-Mishuig-patch-5-portable-win-x64.zip
+          name: DocumentGenerator-${{ steps.proj.outputs.version }}-portable-win-x64
+          path: publish/DocumentGenerator-${{ steps.proj.outputs.version }}-portable-win-x64.zip
           if-no-files-found: error
           retention-days: 14
