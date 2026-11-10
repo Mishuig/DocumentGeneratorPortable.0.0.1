@@ -11,9 +11,22 @@ namespace DocumentGenerator.Services;
 /// </summary>
 public sealed class DocxTemplateEngine
 {
-    // Підтримка латиниці, кирилиці, цифр, _, -, . усередині {{змінна}}
+    // Усе між {{ і }} — змінна: літери будь-якою мовою, цифри, пробіли, крапки, лапки,
+    // апострофи, спецсимволи, емодзі, а також порожнє {{}}. Singleline — щоб "." збігався і з розривом рядка.
     private static readonly Regex PlaceholderRegex =
-        new(@"\{\{\s*([\p{L}\p{N}_.-]+)\s*\}\}", RegexOptions.Compiled | RegexOptions.CultureInvariant);
+        new(@"\{\{(.*?)\}\}", RegexOptions.Compiled | RegexOptions.CultureInvariant | RegexOptions.Singleline);
+
+    /// <summary>
+    /// Єдине правило нормалізації імені змінної (для пошуку, форми та підстановки):
+    /// нерозривні/вузькі пробіли та переноси стають звичайним пробілом, краї обрізаються.
+    /// Вміст усередині імені (крапки, лапки, символи) не змінюється. Порожнє {{}} дає "".
+    /// </summary>
+    public static string NormalizeKey(string? raw)
+    {
+        if (string.IsNullOrEmpty(raw)) return string.Empty;
+        var chars = raw.Select(c => char.IsWhiteSpace(c) ? ' ' : c).ToArray();
+        return new string(chars).Trim();
+    }
 
     public IReadOnlyList<string> FindPlaceholders(string docxPath)
     {
@@ -24,7 +37,7 @@ public sealed class DocxTemplateEngine
         {
             var text = string.Concat(paragraph.Descendants<Text>().Select(x => x.Text));
             foreach (Match match in PlaceholderRegex.Matches(text))
-                keys.Add(match.Groups[1].Value);
+                keys.Add(NormalizeKey(match.Groups[1].Value));
         }
 
         return keys.OrderBy(x => x, StringComparer.OrdinalIgnoreCase).ToList();
@@ -93,7 +106,7 @@ public sealed class DocxTemplateEngine
         // Process from right to left so offsets of earlier placeholders remain valid.
         foreach (var match in matches.OrderByDescending(x => x.Index))
         {
-            var key = match.Groups[1].Value;
+            var key = NormalizeKey(match.Groups[1].Value);
             if (!values.TryGetValue(key, out var replacement)) replacement = "";
             replacement ??= "";
             if (Regex.IsMatch(key, @"(full.?name|pib|fio|person.?name)", RegexOptions.IgnoreCase))
