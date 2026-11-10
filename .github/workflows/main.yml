@@ -1,10 +1,12 @@
-name: Build portable (Mishuig-patch-7)
+name: Build portable
 
 on:
   workflow_dispatch:
   push:
     branches:
-      - Mishuig-patch-7
+      - main
+      - master
+      - 'Mishuig-patch-*'
 
 permissions:
   contents: read
